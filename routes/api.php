@@ -9,14 +9,16 @@ use App\Http\Controllers\WebhookController;
 
 
 
-Route::prefix('orders')->group(function () {
-    Route::post('/', [OrderController::class, 'store']);
-    Route::get('/', [OrderController::class, 'index']);
-    Route::post('/{order}/cancel', [OrderController::class, 'cancel']);
-});
+Route::middleware('throttle:api')->group(function () {
+    Route::prefix('orders')->group(function () {
+        Route::post('/', [OrderController::class, 'store']);
+        Route::get('/', [OrderController::class, 'index']);
+        Route::post('/{order}/cancel', [OrderController::class, 'cancel']);
+    });
 
-Route::prefix('payments')->group(function () {
-    Route::post('/{order}', [PaymentController::class, 'pay']);
-});
+    Route::prefix('payments')->group(function () {
+        Route::post('/{order}', [PaymentController::class, 'pay']);
+    });
 
-Route::post('/webhook/stripe', [WebhookController::class, 'handle']);
+    Route::post('/webhook/stripe', [WebhookController::class, 'handle']);
+});
