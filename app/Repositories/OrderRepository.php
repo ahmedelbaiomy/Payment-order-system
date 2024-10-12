@@ -14,8 +14,7 @@ class OrderRepository extends BaseRepository
 
     public function getOrdersWithFilters($userId, $filters)
     {
-//        $query = $this->model->where('user_id', $userId);
-        $query = $this->model->where('user_id', 1);
+        $query = $this->model->where('user_id', $userId);
 
         if (isset($filters['status'])) {
             $query->status($filters['status']);

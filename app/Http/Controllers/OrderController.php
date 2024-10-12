@@ -32,7 +32,8 @@ class OrderController extends Controller
             'start_date' => $request->query('start_date'),
             'end_date' => $request->query('end_date')
         ];
-        $orders = $this->orderRepository->getOrdersWithFilters(1,$filters);
+        $user_id= auth('api')->id();
+        $orders = $this->orderRepository->getOrdersWithFilters($user_id,$filters);
         if ($orders->isEmpty()) {
             return response()->json([
                 'success' => true,
@@ -59,8 +60,7 @@ class OrderController extends Controller
         $totalPrice = $product->price * $request->quantity;
 
         $order = $this->orderRepository->create([
-//            'user_id' => auth()->id(),
-            'user_id' => 1,
+            'user_id' => auth()->id(),
             'product_id' => $request->product_id,
             'quantity' => $request->quantity,
             'total_price' => round($totalPrice, 2),
