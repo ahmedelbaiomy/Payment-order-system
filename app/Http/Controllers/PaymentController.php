@@ -13,7 +13,7 @@ class PaymentController extends Controller
     public function pay(ProcessPaymentRequest $request, Order $order)
     {
         try {
-//            $this->authorize('pay', $order);
+            $this->authorize('pay', $order);
 
             $stripe = new \Stripe\StripeClient(config('services.stripe.secret'));
 

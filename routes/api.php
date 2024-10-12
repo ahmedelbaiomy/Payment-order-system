@@ -24,7 +24,7 @@ Route::middleware('throttle:api')->group(function () {
     Route::middleware('auth:api')->prefix('orders')->group(function () {
         Route::post('/', [OrderController::class, 'store']);
         Route::get('/', [OrderController::class, 'index']);
-        Route::post('/{order}/cancel', [OrderController::class, 'cancel']);
+        Route::post('/{order}/cancel', [OrderController::class, 'cancel'])->middleware('can:cancel,order');
     });
 
     Route::middleware('auth:api')->prefix('payments')->group(function () {

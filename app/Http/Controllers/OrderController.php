@@ -10,10 +10,12 @@ use App\Http\Resources\OrderResource;
 use App\Repositories\OrderRepository;
 use App\Repositories\ProductRepository;
 use App\Models\Order;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
+    use AuthorizesRequests;
     protected $orderRepository;
     protected $productRepository;
 
@@ -27,6 +29,7 @@ class OrderController extends Controller
      */
     public function index(FilterOrdersRequest $request)
     {
+
         $filters = [
             'status' => $request->query('status'),
             'start_date' => $request->query('start_date'),
@@ -76,6 +79,7 @@ class OrderController extends Controller
 
     public function cancel(Order $order)
     {
+        $this->authorize('cancel', $order);
         return $this->orderRepository->cancel($order);
     }
 }

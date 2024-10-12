@@ -16,7 +16,12 @@ class OrderPolicy
 
     public function pay(User $user, Order $order): bool
     {
-        return $user->id === $order->id && $order->status === 'Pending';
+        return $user->id === $order->user_id && $order->status === 'Pending';
+    }
+
+    public function cancel(User $user, Order $order): bool
+    {
+        return $user->id === $order->user_id && $order->status === 'Pending';
     }
 
 }
