@@ -35,13 +35,13 @@ class OrderController extends Controller
         $orders = $this->orderRepository->getOrdersWithFilters(1,$filters);
         if ($orders->isEmpty()) {
             return response()->json([
-                'status' => 'success',
+                'success' => true,
                 'data' => [],
                 'message' => 'No orders found',
             ], 200);
         }
         return response()->json([
-            'status' => 'success',
+            'success' => true,
             'data' => OrderResource::collection($orders),
             'message' => 'Orders retrieved successfully',
         ], 200);
@@ -51,25 +51,24 @@ class OrderController extends Controller
         $product = $this->productRepository->find($request->product_id);
         if (!$product) {
             return response()->json([
-                'status' => 'error',
+                'success' => false,
                 'message' => 'Product not found.',
             ], 404);
         }
 
         $totalPrice = $product->price * $request->quantity;
-        $formattedTotalPrice = number_format($totalPrice, 2, '.', ',');
 
         $order = $this->orderRepository->create([
 //            'user_id' => auth()->id(),
             'user_id' => 1,
             'product_id' => $request->product_id,
             'quantity' => $request->quantity,
-            'total_price' => $formattedTotalPrice,
+            'total_price' => round($totalPrice, 2),
             'status' => 'Pending',
         ]);
 
         return response()->json([
-            'status' => 'success',
+            'success' => true,
             'data' => new OrderResource($order),
             'message' => 'Order created successfully',
         ], 201);
@@ -77,31 +76,6 @@ class OrderController extends Controller
 
     public function cancel(Order $order)
     {
-        if (!$order) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Order not found',
-            ], 404);
-        }
-        if ($order->user_id !== auth()->id()) {
-                return response()->json([
-                'status' => 'error',
-                'message' => 'You are not authorized to cancel this order',
-            ], 403);
-        }
-        if ($order->status !== 'Pending') {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Order cannot be canceled as it is not in a cancellable state',
-            ], 403);
-        }
-
-        $order->status = 'Canceled';
-        $order->save();
-        return response()->json([
-            'status' => 'success',
-            'data' => new OrderResource($order),
-            'message' => 'Order has been canceled successfully.',
-        ], 200);
+        return $this->orderRepository->cancel($order);
     }
 }

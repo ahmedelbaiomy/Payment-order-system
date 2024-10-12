@@ -15,6 +15,10 @@ class Order extends Model
     public function product(){
         return $this->belongsTo(Product::class);
     }
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
     public function scopeStatus(Builder $query, $status)
     {
         return $query->when($status, function ($q) use ($status) {
