@@ -87,6 +87,7 @@ class Handler extends ExceptionHandler
         return response()->json([
             'success' => false,
             'message' => 'An error occurred. Please try again later.',
+//            'error'=>$e->getMessage()
         ], 500);
     }
 }

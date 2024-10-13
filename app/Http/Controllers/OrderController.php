@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\FilterOrdersRequest;
 use App\Http\Requests\StoreOrderRequest;
-use App\Http\Requests\UpdateOrderStatusRequest;
-use App\Http\Requests\ProcessPaymentRequest;
 use App\Http\Resources\OrderResource;
 use App\Repositories\OrderRepository;
 use App\Repositories\ProductRepository;

@@ -2,19 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\PaymentStatusUpdated;
 use App\Http\Requests\ProcessPaymentRequest;
 use App\Models\Order;
 use App\Models\Payment;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Broadcast;
 use Stripe\Stripe;
 
 class PaymentController extends Controller
 {
+    use AuthorizesRequests;
     public function pay(ProcessPaymentRequest $request, Order $order)
     {
-        try {
-            $this->authorize('pay', $order);
 
+
+        try {
+//            $this->authorize('pay', $order);
             $stripe = new \Stripe\StripeClient(config('services.stripe.secret'));
 
             $paymentIntent =$stripe->paymentIntents->create([
@@ -38,18 +43,23 @@ class PaymentController extends Controller
                     'payment_status' => 'success',
                     'transaction_id' => $paymentIntent->id,
                 ]);
+                Broadcast::event(new PaymentStatusUpdated($order,'success','Your payment was processed successfully!'));
                 return response()->json([
                     'success' => true,
                     'message' => 'Payment successful',
                     'order' => $order,
                 ]);
             } else {
+                Broadcast::event(new PaymentStatusUpdated($order,'failed',' Payment failed. Please try again or contact support.'));
+
                 return response()->json([
                     'success' => false,
                     'message' => 'Payment not successful. Current status: ' . $paymentIntent->status,
                 ], 400);
             }
         }catch (\Exception $e){
+            Broadcast::event(new PaymentStatusUpdated($order,'failed',' Payment failed. Please try again or contact support.'));
+
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),
