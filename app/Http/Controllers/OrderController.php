@@ -27,7 +27,6 @@ class OrderController extends Controller
      */
     public function index(FilterOrdersRequest $request)
     {
-
         $filters = [
             'status' => $request->query('status'),
             'start_date' => $request->query('start_date'),
