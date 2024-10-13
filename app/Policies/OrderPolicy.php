@@ -16,9 +16,11 @@ class OrderPolicy
 
 
 
-    public function cancel(User $user, Order $order): bool
+    public function cancel(User $user, Order $order)
     {
         return $user->id === $order->user_id && $order->status === 'Pending';
     }
+
+
 
 }
